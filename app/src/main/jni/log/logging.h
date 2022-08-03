@@ -6,17 +6,18 @@
 #include "macros.h"
 
 #ifdef __ANDROID__
+
 #include <android/log.h>
+
 #endif
 
 
-#define TAG "DEBUG"
+#define TAG "JniTraceLiuKuo"
 
 #define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__);
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, TAG ,__VA_ARGS__);
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, TAG ,__VA_ARGS__);
 #define LOGW(...) __android_log_print(ANDROID_LOG_WARN, TAG ,__VA_ARGS__);
-
 
 
 #define CHECK(x) \
@@ -124,26 +125,22 @@
 #define LOG(severity) LOG_ ## severity.stream()
 
 
-
-
-
-
 #define VLOG(x) if ((x) > 0) {} else LOG_INFO.stream() // NOLINT
 
 namespace Zhenxi {
 
-template<typename LHS, typename RHS>
-struct EagerEvaluator {
-    EagerEvaluator(LHS lhs, RHS rhs) : lhs(lhs), rhs(rhs) {}
+    template<typename LHS, typename RHS>
+    struct EagerEvaluator {
+        EagerEvaluator(LHS lhs, RHS rhs) : lhs(lhs), rhs(rhs) {}
 
-    LHS lhs;
-    RHS rhs;
-};
+        LHS lhs;
+        RHS rhs;
+    };
 
-template<typename LHS, typename RHS>
-EagerEvaluator<LHS, RHS> MakeEagerEvaluator(LHS lhs, RHS rhs) {
-    return EagerEvaluator<LHS, RHS>(lhs, rhs);
-}
+    template<typename LHS, typename RHS>
+    EagerEvaluator<LHS, RHS> MakeEagerEvaluator(LHS lhs, RHS rhs) {
+        return EagerEvaluator<LHS, RHS>(lhs, rhs);
+    }
 
 #define EAGER_PTR_EVALUATOR(T1, T2) \
   template <> struct EagerEvaluator<T1, T2> { \
@@ -154,88 +151,88 @@ EagerEvaluator<LHS, RHS> MakeEagerEvaluator(LHS lhs, RHS rhs) {
     const void* rhs; \
   }
 
-EAGER_PTR_EVALUATOR(const char*, const char*);
+    EAGER_PTR_EVALUATOR(const char*, const char*);
 
-EAGER_PTR_EVALUATOR(const char*, char*);
+    EAGER_PTR_EVALUATOR(const char*, char*);
 
-EAGER_PTR_EVALUATOR(char*, const char*);
+    EAGER_PTR_EVALUATOR(char*, const char*);
 
-EAGER_PTR_EVALUATOR(char*, char*);
+    EAGER_PTR_EVALUATOR(char*, char*);
 
-EAGER_PTR_EVALUATOR(const unsigned char*, const unsigned char*);
+    EAGER_PTR_EVALUATOR(const unsigned char*, const unsigned char*);
 
-EAGER_PTR_EVALUATOR(const unsigned char*, unsigned char*);
+    EAGER_PTR_EVALUATOR(const unsigned char*, unsigned char*);
 
-EAGER_PTR_EVALUATOR(unsigned char*, const unsigned char*);
+    EAGER_PTR_EVALUATOR(unsigned char*, const unsigned char*);
 
-EAGER_PTR_EVALUATOR(unsigned char*, unsigned char*);
+    EAGER_PTR_EVALUATOR(unsigned char*, unsigned char*);
 
-EAGER_PTR_EVALUATOR(const signed char*, const signed char*);
+    EAGER_PTR_EVALUATOR(const signed char*, const signed char*);
 
-EAGER_PTR_EVALUATOR(const signed char*, signed char*);
+    EAGER_PTR_EVALUATOR(const signed char*, signed char*);
 
-EAGER_PTR_EVALUATOR(signed char*, const signed char*);
+    EAGER_PTR_EVALUATOR(signed char*, const signed char*);
 
-EAGER_PTR_EVALUATOR(signed char*, signed char*);
+    EAGER_PTR_EVALUATOR(signed char*, signed char*);
 
 
-class LogMessage {
+    class LogMessage {
 
- public:
-    LogMessage(const char *file, int line)
-            : flushed_(false) {
-    }
+    public:
+        LogMessage(const char *file, int line)
+                : flushed_(false) {
+        }
 
-    LogMessage(const LogMessage &) = delete;
+        LogMessage(const LogMessage &) = delete;
 
-    LogMessage &operator=(const LogMessage &) = delete;
+        LogMessage &operator=(const LogMessage &) = delete;
 
-    void Flush() {
+        void Flush() {
 #ifdef CAMEL_BUILD_TYPE_NOLOG
-        //定义了 CAMEL_BUILD_TYPE_NOLOG 则什么也不做
+            //定义了 CAMEL_BUILD_TYPE_NOLOG 则什么也不做
 #else
-        std::string s = str_.str();
-        size_t n = s.size();
+            std::string s = str_.str();
+            size_t n = s.size();
 
 #ifdef __ANDROID__
-        __android_log_write(ANDROID_LOG_ERROR, TAG, s.c_str());
+            //__android_log_write(ANDROID_LOG_ERROR, TAG, s.c_str());
 #else
-        fwrite(s.data(), 1, n, stderr);
+            fwrite(s.data(), 1, n, stderr);
 #endif
-        flushed_ = true;
+            flushed_ = true;
 #endif
 
-}
-
-    virtual ~LogMessage() {
-        if (!flushed_) {
-            Flush();
         }
-    }
 
-    std::ostream &stream() { return str_; }
+        virtual ~LogMessage() {
+            if (!flushed_) {
+                Flush();
+            }
+        }
 
- private:
-    bool flushed_;
-    std::ostringstream str_;
-};
+        std::ostream &stream() { return str_; }
+
+    private:
+        bool flushed_;
+        std::ostringstream str_;
+    };
 
 
-class LogMessageFatal : public LogMessage {
+    class LogMessageFatal : public LogMessage {
 
- public:
-    LogMessageFatal(const char *file, int line)
-            : LogMessage(file, line) {}
+    public:
+        LogMessageFatal(const char *file, int line)
+                : LogMessage(file, line) {}
 
-    LogMessageFatal(const LogMessageFatal &) = delete;
+        LogMessageFatal(const LogMessageFatal &) = delete;
 
-    LogMessageFatal &operator=(const LogMessageFatal &) = delete;
+        LogMessageFatal &operator=(const LogMessageFatal &) = delete;
 
-    NO_RETURN ~LogMessageFatal() override {
-        Flush();
-        abort();
-    }
-};
+        NO_RETURN ~LogMessageFatal() override {
+            Flush();
+            abort();
+        }
+    };
 
 }
 

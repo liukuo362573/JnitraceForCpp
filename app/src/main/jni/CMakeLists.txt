@@ -3,13 +3,11 @@ set(CMAKE_CXX_STANDARD 14)
 #添加内联支持
 enable_language(C ASM)
 
-
 include_directories(
         ./
         ./log/
         ./Substrate/
         ./uitils/
-
 )
 
 
@@ -45,17 +43,18 @@ add_library(
         uitils/parse.cpp
 )
 
-target_link_libraries(
-        jnitrace
-
-        ${log-lib}
-)
-
-
 find_library(
         log-lib
         log
 )
+
+target_link_libraries(
+        jnitrace
+        ${log-lib}
+)
+
+
+
 
 
 
