@@ -263,8 +263,8 @@ static size_t SubstrateHookFunctionThumb(SubstrateProcessRef process, void *symb
                     uint16_t value;
 
                     struct {
-                        uint16_t immediate : 8;
-                        uint16_t rd : 3;
+                        uint16_t immediate: 8;
+                        uint16_t rd: 3;
                         uint16_t : 5;
                     };
                 } bits = {backup[offset + 0]};
@@ -283,8 +283,8 @@ static size_t SubstrateHookFunctionThumb(SubstrateProcessRef process, void *symb
                     uint16_t value;
 
                     struct {
-                        uint16_t imm8 : 8;
-                        uint16_t cond : 4;
+                        uint16_t imm8: 8;
+                        uint16_t cond: 4;
                         uint16_t /*1101*/ : 4;
                     };
                 } bits = {backup[offset + 0]};
@@ -307,9 +307,9 @@ static size_t SubstrateHookFunctionThumb(SubstrateProcessRef process, void *symb
                     uint16_t value;
 
                     struct {
-                        uint16_t imm6 : 6;
-                        uint16_t cond : 4;
-                        uint16_t s : 1;
+                        uint16_t imm6: 6;
+                        uint16_t cond: 4;
+                        uint16_t s: 1;
                         uint16_t : 5;
                     };
                 } bits = {backup[offset + 0]};
@@ -318,10 +318,10 @@ static size_t SubstrateHookFunctionThumb(SubstrateProcessRef process, void *symb
                     uint16_t value;
 
                     struct {
-                        uint16_t imm11 : 11;
-                        uint16_t j2 : 1;
-                        uint16_t a : 1;
-                        uint16_t j1 : 1;
+                        uint16_t imm11: 11;
+                        uint16_t j2: 1;
+                        uint16_t a: 1;
+                        uint16_t j1: 1;
                         uint16_t : 2;
                     };
                 } exts = {backup[offset + 1]};
@@ -360,8 +360,8 @@ static size_t SubstrateHookFunctionThumb(SubstrateProcessRef process, void *symb
                     uint16_t value;
 
                     struct {
-                        uint16_t immediate : 10;
-                        uint16_t s : 1;
+                        uint16_t immediate: 10;
+                        uint16_t s: 1;
                         uint16_t : 5;
                     };
                 } bits = {backup[offset + 0]};
@@ -370,10 +370,10 @@ static size_t SubstrateHookFunctionThumb(SubstrateProcessRef process, void *symb
                     uint16_t value;
 
                     struct {
-                        uint16_t immediate : 11;
-                        uint16_t j2 : 1;
-                        uint16_t x : 1;
-                        uint16_t j1 : 1;
+                        uint16_t immediate: 11;
+                        uint16_t j2: 1;
+                        uint16_t x: 1;
+                        uint16_t j1: 1;
                         uint16_t : 2;
                     };
                 } exts = {backup[offset + 1]};
@@ -405,12 +405,12 @@ static size_t SubstrateHookFunctionThumb(SubstrateProcessRef process, void *symb
                     uint16_t value;
 
                     struct {
-                        uint16_t rn : 3;
-                        uint16_t immediate : 5;
+                        uint16_t rn: 3;
+                        uint16_t immediate: 5;
                         uint16_t : 1;
-                        uint16_t i : 1;
+                        uint16_t i: 1;
                         uint16_t : 1;
-                        uint16_t op : 1;
+                        uint16_t op: 1;
                         uint16_t : 4;
                     };
                 } bits = {backup[offset + 0]};
@@ -458,7 +458,7 @@ static size_t SubstrateHookFunctionThumb(SubstrateProcessRef process, void *symb
 
                     struct {
                         uint16_t : 7;
-                        uint16_t u : 1;
+                        uint16_t u: 1;
                         uint16_t : 8;
                     };
                 } bits = {backup[offset + 0]};
@@ -467,8 +467,8 @@ static size_t SubstrateHookFunctionThumb(SubstrateProcessRef process, void *symb
                     uint16_t value;
 
                     struct {
-                        uint16_t immediate : 12;
-                        uint16_t rt : 4;
+                        uint16_t immediate: 12;
+                        uint16_t rt: 4;
                     };
                 } exts = {backup[offset + 1]};
 
@@ -490,10 +490,10 @@ static size_t SubstrateHookFunctionThumb(SubstrateProcessRef process, void *symb
                     uint16_t value;
 
                     struct {
-                        uint16_t rd : 3;
-                        uint16_t rm : 3;
-                        uint16_t h2 : 1;
-                        uint16_t h1 : 1;
+                        uint16_t rd: 3;
+                        uint16_t rm: 3;
+                        uint16_t h2: 1;
+                        uint16_t h1: 1;
                         uint16_t : 8;
                     };
                 } bits = {backup[offset + 0]};
@@ -633,20 +633,20 @@ SubstrateHookFunctionARM(SubstrateProcessRef process, void *symbol, void *replac
                     uint32_t value;
 
                     struct {
-                        uint32_t rm : 4;
+                        uint32_t rm: 4;
                         uint32_t : 1;
-                        uint32_t shift : 2;
-                        uint32_t shiftamount : 5;
-                        uint32_t rd : 4;
-                        uint32_t rn : 4;
-                        uint32_t l : 1;
-                        uint32_t w : 1;
-                        uint32_t b : 1;
-                        uint32_t u : 1;
-                        uint32_t p : 1;
-                        uint32_t mode : 1;
-                        uint32_t type : 2;
-                        uint32_t cond : 4;
+                        uint32_t shift: 2;
+                        uint32_t shiftamount: 5;
+                        uint32_t rd: 4;
+                        uint32_t rn: 4;
+                        uint32_t l: 1;
+                        uint32_t w: 1;
+                        uint32_t b: 1;
+                        uint32_t u: 1;
+                        uint32_t p: 1;
+                        uint32_t mode: 1;
+                        uint32_t type: 2;
+                        uint32_t cond: 4;
                     };
                 } bits = {backup[offset + 0]}, copy(bits);
 
@@ -691,9 +691,7 @@ SubstrateHookFunctionARM(SubstrateProcessRef process, void *symbol, void *replac
             sprintf(name, "%p", *result);
             MSLogHexEx(buffer, length, 4, name);
         }
-
     }
-
     {
         SubstrateHookMemory code(process, symbol, used);
 
@@ -713,8 +711,7 @@ SubstrateHookFunctionARM(SubstrateProcessRef process, void *symbol, void *replac
 static size_t
 SubstrateHookFunction(SubstrateProcessRef process, void *symbol, void *replace, void **result) {
     if (MSDebug)
-        MSLog(MSLogLevelNotice, "SubstrateHookFunction(%p, %p, %p, %p)\n", process, symbol, replace,
-              result);
+        MSLog(MSLogLevelNotice, "SubstrateHookFunction(%p, %p, %p, %p)\n", process, symbol, replace, result);
 
     if ((reinterpret_cast<uintptr_t>(symbol) & 0x1) == 0)
         return SubstrateHookFunctionARM(process, symbol, replace, result);
@@ -760,7 +757,6 @@ static void SubstrateHookFunction(SubstrateProcessRef process, void *symbol, voi
             MSLog(MSLogLevelError, "MS:Error:MSGetInstructionWidthIntel(%p) == 0", area + used);
             return;
         }
-
         used += width;
     }
 
@@ -810,7 +806,6 @@ static void SubstrateHookFunction(SubstrateProcessRef process, void *symbol, voi
             }
         } else
 #endif
-
         if (backup[offset] == 0xe8) {
             int32_t relative(*reinterpret_cast<int32_t *>(backup + offset + 1));
             void *destiny(area + offset + decode.len + relative);

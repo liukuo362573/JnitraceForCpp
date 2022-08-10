@@ -43,7 +43,6 @@
 #define   A64_JNIEXPORT        __attribute__((visibility("default")))
 #define __flush_cache(c, n)        __builtin___clear_cache(reinterpret_cast<char *>(c), reinterpret_cast<char *>(c) + n)
 
-
 typedef uint32_t *__restrict *__restrict instruction;
 typedef struct
 {
@@ -466,106 +465,105 @@ extern "C" {
 
 //-------------------------------------------------------------------------
 
-static __attribute((aligned(__page_size))) uint32_t __insns_pool[A64_MAX_BACKUPS][A64_MAX_INSTRUCTIONS * 10];
+    static __attribute((aligned(__page_size))) uint32_t __insns_pool[A64_MAX_BACKUPS][A64_MAX_INSTRUCTIONS * 10];
 
 //-------------------------------------------------------------------------
 
-class A64HookInit
-{
-public:
-    A64HookInit()
+    class A64HookInit
     {
-        __make_rwx(__insns_pool, sizeof(__insns_pool));
+    public:
+        A64HookInit()
+        {
+            __make_rwx(__insns_pool, sizeof(__insns_pool));
+        }
+    };
+    static A64HookInit __init;
+
+//-------------------------------------------------------------------------
+
+    static uint32_t *FastAllocateTrampoline()
+    {
+        static_assert((A64_MAX_INSTRUCTIONS * 10 * sizeof(uint32_t)) % 8 == 0, "8-byte align");
+        static volatile int32_t __index = -1;
+
+        int32_t i = __atomic_increase(&__index);
+        if (__predict_true(i >= 0 && i < __countof(__insns_pool))) {
+            return __insns_pool[i];
+        } //if
+
+        return NULL;
     }
-};
-static A64HookInit __init;
 
 //-------------------------------------------------------------------------
 
-static uint32_t *FastAllocateTrampoline()
-{
-    static_assert((A64_MAX_INSTRUCTIONS * 10 * sizeof(uint32_t)) % 8 == 0, "8-byte align");
-    static volatile int32_t __index = -1;
+    A64_JNIEXPORT void *A64HookFunctionV(void *const symbol, void *const replace,
+                                         void *const rwx, const uintptr_t rwx_size)
+    {
+        static constexpr uint_fast64_t mask = 0x03ffffffu; // 0b00000011111111111111111111111111
 
-    int32_t i = __atomic_increase(&__index);
-    if (__predict_true(i >= 0 && i < __countof(__insns_pool))) {
-        return __insns_pool[i];
-    } //if
+        uint32_t *trampoline = static_cast<uint32_t *>(rwx), *original = static_cast<uint32_t *>(symbol);
 
-    return NULL;
-}
-
-//-------------------------------------------------------------------------
-
-A64_JNIEXPORT void *A64HookFunctionV(void *const symbol, void *const replace,
-                                     void *const rwx, const uintptr_t rwx_size)
-{
-    static constexpr uint_fast64_t mask = 0x03ffffffu; // 0b00000011111111111111111111111111
-
-    uint32_t *trampoline = static_cast<uint32_t *>(rwx), *original = static_cast<uint32_t *>(symbol);
-
-    static_assert(A64_MAX_INSTRUCTIONS >= 5, "please fix A64_MAX_INSTRUCTIONS!");
-    auto pc_offset = static_cast<int64_t>(__intval(replace) - __intval(symbol)) >> 2;
-    if (llabs(pc_offset) >= (mask >>1)) {
-        int32_t count = (reinterpret_cast<uint64_t>(original + 2) & 7u) != 0u ? 5 : 4;
-        if (trampoline) {
-            if (rwx_size < count * 10u) {
-                return NULL;
+        static_assert(A64_MAX_INSTRUCTIONS >= 5, "please fix A64_MAX_INSTRUCTIONS!");
+        auto pc_offset = static_cast<int64_t>(__intval(replace) - __intval(symbol)) >> 2;
+        if (llabs(pc_offset) >= (mask >>1)) {
+            int32_t count = (reinterpret_cast<uint64_t>(original + 2) & 7u) != 0u ? 5 : 4;
+            if (trampoline) {
+                if (rwx_size < count * 10u) {
+                    return NULL;
+                } //if
+                __fix_instructions(original, count, trampoline);
             } //if
-            __fix_instructions(original, count, trampoline);
-        } //if
 
-        if (__make_rwx(original, 5 * sizeof(uint32_t)) == 0) {
-            if (count == 5) {
-                original[0] = A64_NOP;
-                ++original;
+            if (__make_rwx(original, 5 * sizeof(uint32_t)) == 0) {
+                if (count == 5) {
+                    original[0] = A64_NOP;
+                    ++original;
+                } //if
+                original[0] = 0x58000051u; // LDR X17, #0x8
+                original[1] = 0xd61f0220u; // BR X17
+                *reinterpret_cast<int64_t *>(original + 2) = __intval(replace);
+                __flush_cache(symbol, 5 * sizeof(uint32_t));
+
+            } else {
+                trampoline = NULL;
             } //if
-            original[0] = 0x58000051u; // LDR X17, #0x8
-            original[1] = 0xd61f0220u; // BR X17
-            *reinterpret_cast<int64_t *>(original + 2) = __intval(replace);
-            __flush_cache(symbol, 5 * sizeof(uint32_t));
-
         } else {
-            trampoline = NULL;
-        } //if
-    } else {
-        if (trampoline) {
-            if (rwx_size < 1u * 10u) {
-                return NULL;
+            if (trampoline) {
+                if (rwx_size < 1u * 10u) {
+                    return NULL;
+                } //if
+                __fix_instructions(original, 1, trampoline);
             } //if
-            __fix_instructions(original, 1, trampoline);
+
+            if (__make_rwx(original, 1 * sizeof(uint32_t)) == 0) {
+                __sync_cmpswap(original, *original, 0x14000000u | (pc_offset & mask)); // "B" ADDR_PCREL26
+                __flush_cache(symbol, 1 * sizeof(uint32_t));
+
+            } else {
+                trampoline = NULL;
+            } //if
         } //if
 
-        if (__make_rwx(original, 1 * sizeof(uint32_t)) == 0) {
-            __sync_cmpswap(original, *original, 0x14000000u | (pc_offset & mask)); // "B" ADDR_PCREL26
-            __flush_cache(symbol, 1 * sizeof(uint32_t));
-
-        } else {
-            trampoline = NULL;
-        } //if
-    } //if
-
-    return trampoline;
-}
-
-//-------------------------------------------------------------------------
-
-A64_JNIEXPORT void A64HookFunction(void *const symbol, void *const replace, void **result)
-{
-    void *trampoline = NULL;
-    if (result != NULL) {
-        trampoline = FastAllocateTrampoline();
-        *result = trampoline;
-        if (trampoline == NULL) return;
-    } //if
-    if(__make_rwx(symbol, 4096) != 0) {
-        return;
+        return trampoline;
     }
-    trampoline = A64HookFunctionV(symbol, replace, trampoline, A64_MAX_INSTRUCTIONS * 10u);
-    if (trampoline == NULL && result != NULL) {
-        *result = NULL;
-    } //if
-}
-}
 
+//-------------------------------------------------------------------------
+
+    A64_JNIEXPORT void A64HookFunction(void *const symbol, void *const replace, void **result)
+    {
+        void *trampoline = NULL;
+        if (result != NULL) {
+            trampoline = FastAllocateTrampoline();
+            *result = trampoline;
+            if (trampoline == NULL) return;
+        } //if
+        if(__make_rwx(symbol, 4096) != 0) {
+            return;
+        }
+        trampoline = A64HookFunctionV(symbol, replace, trampoline, A64_MAX_INSTRUCTIONS * 10u);
+        if (trampoline == NULL && result != NULL) {
+            *result = NULL;
+        } //if
+    }
+}
 #endif // defined(__aarch64__)

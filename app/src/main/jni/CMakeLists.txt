@@ -7,7 +7,8 @@ include_directories(
         ./
         ./log/
         ./Substrate/
-        ./uitils/
+        ./utils/
+        ./xhook/
 )
 
 
@@ -17,6 +18,8 @@ add_library(
         SHARED
 
         test/test.cpp
+        log/logging.h
+        utils/parse.cpp
 )
 target_link_libraries(
         tracetest
@@ -24,13 +27,12 @@ target_link_libraries(
         ${log-lib}
 )
 
-
 add_library(
         jnitrace
 
         SHARED
 
-        main.cpp
+        main_substrate.cpp
         Jnitrace.cpp
 
         #Substrate
@@ -40,7 +42,17 @@ add_library(
         Substrate/SubstratePosixMemory.cpp
         Substrate/And64InlineHook.cpp
 
-        uitils/parse.cpp
+        utils/parse.cpp
+
+        #xhook
+        xhook/xhook.c
+        xhook/xh_core.c
+        xhook/xh_elf.c
+        xhook/xh_jni.c
+        xhook/xh_log.c
+        xhook/xh_util.c
+        xhook/xh_version.c
+        main_xhook.c
 )
 
 find_library(
@@ -52,14 +64,3 @@ target_link_libraries(
         jnitrace
         ${log-lib}
 )
-
-
-
-
-
-
-
-
-
-
-

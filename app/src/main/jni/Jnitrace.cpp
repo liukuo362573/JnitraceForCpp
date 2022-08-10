@@ -1,15 +1,9 @@
-
-
 #include "Jnitrace.h"
-
 
 static string filterSoName;
 
-
-
 //jobject CallObjectMethod(JNIEnv*, jobject, jmethodID, va_list args);
-JNI_HOOK_DEF(jobject, CallObjectMethodV, JNIEnv *env, jobject obj, jmethodID jmethodId,
-             va_list args)
+JNI_HOOK_DEF(jobject, CallObjectMethodV, JNIEnv *env, jobject obj, jmethodID jmethodId, va_list args)
     Dl_info info;
     dladdr((void *) __builtin_return_address(0), &info);
     if (strstr(info.dli_fname, filterSoName.c_str())) {
@@ -33,9 +27,7 @@ JNI_HOOK_DEF(void, CallVoidMethodV, JNIEnv *env, jobject obj, jmethodID jmethodI
     return orig_CallVoidMethodV(env, obj, jmethodId, args);
 }
 
-JNI_HOOK_DEF(jboolean, CallBooleanMethodV, JNIEnv *env, jobject obj, jmethodID jmethodId,
-             va_list args)
-
+JNI_HOOK_DEF(jboolean, CallBooleanMethodV, JNIEnv *env, jobject obj, jmethodID jmethodId, va_list args)
     Dl_info info;
     dladdr((void *) __builtin_return_address(0), &info);
     if (strstr(info.dli_fname, filterSoName.c_str())) {
@@ -45,10 +37,8 @@ JNI_HOOK_DEF(jboolean, CallBooleanMethodV, JNIEnv *env, jobject obj, jmethodID j
         LOG(INFO) << "result Boolean : " << ret;
         return ret;
     }
-
     return orig_CallBooleanMethodV(env, obj, jmethodId, args);
 }
-
 
 JNI_HOOK_DEF(jbyte, CallByteMethodV, JNIEnv *env, jobject obj, jmethodID jmethodId, va_list args)
     Dl_info info;
@@ -60,10 +50,8 @@ JNI_HOOK_DEF(jbyte, CallByteMethodV, JNIEnv *env, jobject obj, jmethodID jmethod
         LOG(INFO) << "result Byte: " << ret;
         return ret;
     }
-
     return orig_CallByteMethodV(env, obj, jmethodId, args);
 }
-
 
 JNI_HOOK_DEF(jchar, CallCharMethodV, JNIEnv *env, jobject obj, jmethodID jmethodId, va_list args)
     Dl_info info;
@@ -78,7 +66,6 @@ JNI_HOOK_DEF(jchar, CallCharMethodV, JNIEnv *env, jobject obj, jmethodID jmethod
     return orig_CallCharMethodV(env, obj, jmethodId, args);
 }
 
-
 JNI_HOOK_DEF(jshort, CallShortMethodV, JNIEnv *env, jobject obj, jmethodID jmethodId, va_list args)
     Dl_info info;
     dladdr((void *) __builtin_return_address(0), &info);
@@ -92,7 +79,6 @@ JNI_HOOK_DEF(jshort, CallShortMethodV, JNIEnv *env, jobject obj, jmethodID jmeth
     return orig_CallShortMethodV(env, obj, jmethodId, args);
 }
 
-
 JNI_HOOK_DEF(jint, CallIntMethodV, JNIEnv *env, jobject obj, jmethodID jmethodId, va_list args)
     Dl_info info;
     dladdr((void *) __builtin_return_address(0), &info);
@@ -104,9 +90,7 @@ JNI_HOOK_DEF(jint, CallIntMethodV, JNIEnv *env, jobject obj, jmethodID jmethodId
         return ret;
     }
     return orig_CallIntMethodV(env, obj, jmethodId, args);
-
 }
-
 
 JNI_HOOK_DEF(jlong, CallLongMethodV, JNIEnv *env, jobject obj, jmethodID jmethodId, va_list args)
     Dl_info info;
@@ -121,7 +105,6 @@ JNI_HOOK_DEF(jlong, CallLongMethodV, JNIEnv *env, jobject obj, jmethodID jmethod
     return orig_CallLongMethodV(env, obj, jmethodId, args);
 }
 
-
 JNI_HOOK_DEF(jfloat, CallFloatMethodV, JNIEnv *env, jobject obj, jmethodID jmethodId, va_list args)
     Dl_info info;
     dladdr((void *) __builtin_return_address(0), &info);
@@ -133,11 +116,9 @@ JNI_HOOK_DEF(jfloat, CallFloatMethodV, JNIEnv *env, jobject obj, jmethodID jmeth
         return ret;
     }
     return orig_CallFloatMethodV(env, obj, jmethodId, args);
-
 }
 
-JNI_HOOK_DEF(jdouble, CallDoubleMethodV, JNIEnv *env, jobject obj, jmethodID jmethodId,
-             va_list args)
+JNI_HOOK_DEF(jdouble, CallDoubleMethodV, JNIEnv *env, jobject obj, jmethodID jmethodId, va_list args)
     Dl_info info;
     dladdr((void *) __builtin_return_address(0), &info);
     if (strstr(info.dli_fname, filterSoName.c_str())) {
@@ -150,18 +131,15 @@ JNI_HOOK_DEF(jdouble, CallDoubleMethodV, JNIEnv *env, jobject obj, jmethodID jme
     return orig_CallDoubleMethodV(env, obj, jmethodId, args);
 }
 
-
-
 //------------------ static ------------------------------------------------------------
 
-JNI_HOOK_DEF(jobject, CallStaticObjectMethodV, JNIEnv *env, jclass obj, jmethodID jmethodId,
-             va_list args)
+JNI_HOOK_DEF(jobject, CallStaticObjectMethodV, JNIEnv *env, jclass obj, jmethodID jmethodId, va_list args)
     Dl_info info;
     dladdr((void *) __builtin_return_address(0), &info);
     if (strstr(info.dli_fname, filterSoName.c_str())) {
-        if(jmethodId == nullptr) {
-          LOG(INFO) << "CallStaticObjectMethodV method id  == null  " ;
-          return  orig_CallStaticObjectMethodV(env, obj, jmethodId, args);
+        if (jmethodId == nullptr) {
+            LOG(INFO) << "CallStaticObjectMethodV method id  == null  ";
+            return orig_CallStaticObjectMethodV(env, obj, jmethodId, args);
         }
         GET_JOBJECT_INFO(env, obj)
         GET_METHOD_INFO_ARGS(env, obj, jmethodId, args, true)
@@ -173,8 +151,7 @@ JNI_HOOK_DEF(jobject, CallStaticObjectMethodV, JNIEnv *env, jclass obj, jmethodI
 }
 
 //void CallVoidMethod(jobject obj, jmethodID methodID, va_list args)
-JNI_HOOK_DEF(void, CallStaticVoidMethodV, JNIEnv *env, jclass obj, jmethodID jmethodId,
-             va_list args)
+JNI_HOOK_DEF(void, CallStaticVoidMethodV, JNIEnv *env, jclass obj, jmethodID jmethodId, va_list args)
     Dl_info info;
     dladdr((void *) __builtin_return_address(0), &info);
     if (strstr(info.dli_fname, filterSoName.c_str())) {
@@ -184,9 +161,7 @@ JNI_HOOK_DEF(void, CallStaticVoidMethodV, JNIEnv *env, jclass obj, jmethodID jme
     return orig_CallStaticVoidMethodV(env, obj, jmethodId, args);
 }
 
-JNI_HOOK_DEF(jboolean, CallStaticBooleanMethodV, JNIEnv *env, jclass obj, jmethodID jmethodId,
-             va_list args)
-
+JNI_HOOK_DEF(jboolean, CallStaticBooleanMethodV, JNIEnv *env, jclass obj, jmethodID jmethodId, va_list args)
     Dl_info info;
     dladdr((void *) __builtin_return_address(0), &info);
     if (strstr(info.dli_fname, filterSoName.c_str())) {
@@ -196,13 +171,10 @@ JNI_HOOK_DEF(jboolean, CallStaticBooleanMethodV, JNIEnv *env, jclass obj, jmetho
         LOG(INFO) << "result Boolean : " << ret;
         return ret;
     }
-
     return orig_CallStaticBooleanMethodV(env, obj, jmethodId, args);
 }
 
-
-JNI_HOOK_DEF(jbyte, CallStaticByteMethodV, JNIEnv *env, jclass obj, jmethodID jmethodId,
-             va_list args)
+JNI_HOOK_DEF(jbyte, CallStaticByteMethodV, JNIEnv *env, jclass obj, jmethodID jmethodId, va_list args)
     Dl_info info;
     dladdr((void *) __builtin_return_address(0), &info);
     if (strstr(info.dli_fname, filterSoName.c_str())) {
@@ -212,13 +184,10 @@ JNI_HOOK_DEF(jbyte, CallStaticByteMethodV, JNIEnv *env, jclass obj, jmethodID jm
         LOG(INFO) << "result Byte : " << ret;
         return ret;
     }
-
     return orig_CallStaticByteMethodV(env, obj, jmethodId, args);
 }
 
-
-JNI_HOOK_DEF(jchar, CallStaticCharMethodV, JNIEnv *env, jclass obj, jmethodID jmethodId,
-             va_list args)
+JNI_HOOK_DEF(jchar, CallStaticCharMethodV, JNIEnv *env, jclass obj, jmethodID jmethodId, va_list args)
     Dl_info info;
     dladdr((void *) __builtin_return_address(0), &info);
     if (strstr(info.dli_fname, filterSoName.c_str())) {
@@ -231,9 +200,7 @@ JNI_HOOK_DEF(jchar, CallStaticCharMethodV, JNIEnv *env, jclass obj, jmethodID jm
     return orig_CallStaticCharMethodV(env, obj, jmethodId, args);
 }
 
-
-JNI_HOOK_DEF(jshort, CallStaticShortMethodV, JNIEnv *env, jclass obj, jmethodID jmethodId,
-             va_list args)
+JNI_HOOK_DEF(jshort, CallStaticShortMethodV, JNIEnv *env, jclass obj, jmethodID jmethodId, va_list args)
     Dl_info info;
     dladdr((void *) __builtin_return_address(0), &info);
     if (strstr(info.dli_fname, filterSoName.c_str())) {
@@ -246,9 +213,7 @@ JNI_HOOK_DEF(jshort, CallStaticShortMethodV, JNIEnv *env, jclass obj, jmethodID 
     return orig_CallStaticShortMethodV(env, obj, jmethodId, args);
 }
 
-
-JNI_HOOK_DEF(jint, CallStaticIntMethodV, JNIEnv *env, jclass obj, jmethodID jmethodId,
-             va_list args)
+JNI_HOOK_DEF(jint, CallStaticIntMethodV, JNIEnv *env, jclass obj, jmethodID jmethodId, va_list args)
     Dl_info info;
     dladdr((void *) __builtin_return_address(0), &info);
     if (strstr(info.dli_fname, filterSoName.c_str())) {
@@ -259,12 +224,9 @@ JNI_HOOK_DEF(jint, CallStaticIntMethodV, JNIEnv *env, jclass obj, jmethodID jmet
         return ret;
     }
     return orig_CallStaticIntMethodV(env, obj, jmethodId, args);
-
 }
 
-
-JNI_HOOK_DEF(jlong, CallStaticLongMethodV, JNIEnv *env, jclass obj, jmethodID jmethodId,
-             va_list args)
+JNI_HOOK_DEF(jlong, CallStaticLongMethodV, JNIEnv *env, jclass obj, jmethodID jmethodId, va_list args)
     Dl_info info;
     dladdr((void *) __builtin_return_address(0), &info);
     if (strstr(info.dli_fname, filterSoName.c_str())) {
@@ -277,9 +239,7 @@ JNI_HOOK_DEF(jlong, CallStaticLongMethodV, JNIEnv *env, jclass obj, jmethodID jm
     return orig_CallStaticLongMethodV(env, obj, jmethodId, args);
 }
 
-
-JNI_HOOK_DEF(jfloat, CallStaticFloatMethodV, JNIEnv *env, jclass obj, jmethodID jmethodId,
-             va_list args)
+JNI_HOOK_DEF(jfloat, CallStaticFloatMethodV, JNIEnv *env, jclass obj, jmethodID jmethodId, va_list args)
     Dl_info info;
     dladdr((void *) __builtin_return_address(0), &info);
     if (strstr(info.dli_fname, filterSoName.c_str())) {
@@ -290,12 +250,9 @@ JNI_HOOK_DEF(jfloat, CallStaticFloatMethodV, JNIEnv *env, jclass obj, jmethodID 
         return ret;
     }
     return orig_CallStaticFloatMethodV(env, obj, jmethodId, args);
-
 }
 
-
-JNI_HOOK_DEF(jdouble, CallStaticDoubleMethodV, JNIEnv *env, jclass obj, jmethodID jmethodId,
-             va_list args)
+JNI_HOOK_DEF(jdouble, CallStaticDoubleMethodV, JNIEnv *env, jclass obj, jmethodID jmethodId, va_list args)
     Dl_info info;
     dladdr((void *) __builtin_return_address(0), &info);
     if (strstr(info.dli_fname, filterSoName.c_str())) {
@@ -308,7 +265,6 @@ JNI_HOOK_DEF(jdouble, CallStaticDoubleMethodV, JNIEnv *env, jclass obj, jmethodI
     return orig_CallStaticDoubleMethodV(env, obj, jmethodId, args);
 }
 
-
 void Jnitrace::getJObjectInfo(JNIEnv *env, jobject obj) {
     if (obj == nullptr) {
         return;
@@ -316,7 +272,6 @@ void Jnitrace::getJObjectInfo(JNIEnv *env, jobject obj) {
     LOGE("<<<<<------------------start--------------------->>>>>")
     Jnitrace::getJObjectInfoInternal(env, obj, "invoke this object", true, nullptr);
 }
-
 
 /**
  *
@@ -343,11 +298,9 @@ void Jnitrace::getJObjectInfoInternal(JNIEnv *env,
 
     //打印当前obj的toString
     auto toString_ret = static_cast<jstring>(env->CallObjectMethod(obj, method_id_toString));
-
     const char *toString = env->GetStringUTFChars(toString_ret, NULL);
-
     if (isPrintClassinfo) {
-        if (classinfo == nullptr ) {
+        if (classinfo == nullptr) {
             jclass objClass = env->GetObjectClass(obj);
             classinfo = getJObjectClassInfo(env, objClass);
         }
@@ -355,19 +308,14 @@ void Jnitrace::getJObjectInfoInternal(JNIEnv *env,
     } else {
         LOGI("%s -> %s ", message, toString)
     }
-
     //free
     env->ReleaseStringUTFChars(toString_ret, toString);
     env->DeleteLocalRef(toString_ret);
-
     //todo print Gson
-
 }
 
-
 void Jnitrace::getArgsInfo(JNIEnv *env, jobject obj, jmethodID jmethodId,
-                           va_list args,bool isStatic
-) {
+                           va_list args, bool isStatic) {
 
     if (obj == nullptr) {
         return;
@@ -376,20 +324,15 @@ void Jnitrace::getArgsInfo(JNIEnv *env, jobject obj, jmethodID jmethodId,
         return;
     }
     jclass pJclass = env->GetObjectClass(obj);
-
     //获取被调用的方法信息
     jobject invokeMethod = env->ToReflectedMethod(pJclass, jmethodId, isStatic);
-
     //打印被调用方法信息,只需要调用他的toString
     Jnitrace::getJObjectInfoInternal(env, invokeMethod, "invoke method", false, nullptr);
 
-
     jclass objclass = env->GetObjectClass(invokeMethod);
-
 
     // 获取方法长度
     jint size = env->CallIntMethod(invokeMethod, env->GetMethodID(objclass, "getParameterCount", "()I"));
-
     if (size == 0) {
         //长度等于0直接return,不打印参数信息
         return;
@@ -400,9 +343,7 @@ void Jnitrace::getArgsInfo(JNIEnv *env, jobject obj, jmethodID jmethodId,
             "getParameterTypes",
             "()[Ljava/lang/Class;");
 
-    auto objectArray = static_cast<jobjectArray>(env->CallObjectMethod(invokeMethod,method_id_getTypes));
-
-
+    auto objectArray = static_cast<jobjectArray>(env->CallObjectMethod(invokeMethod, method_id_getTypes));
     //分别判断每个参数的类型
     for (int i = 0; i < size; i++) {
         auto obj = env->GetObjectArrayElement(objectArray, i);
@@ -415,7 +356,6 @@ void Jnitrace::getArgsInfo(JNIEnv *env, jobject obj, jmethodID jmethodId,
         //具体每个类型的class
         char *classInfo = getJObjectClassInfo(env, obj);
         //LOGI("->   %s   ", classInfo)
-
         if (strcmp(classInfo, "boolean") == 0 || strcmp(classInfo, "java.lang.Boolean") == 0) {
             jboolean arg = va_arg(args, jboolean);
             LOGI("%s -> Boolean %hhu ", argsInfo, arg)
@@ -453,7 +393,7 @@ void Jnitrace::getArgsInfo(JNIEnv *env, jobject obj, jmethodID jmethodId,
             jobjectArray arg = va_arg(args, jobjectArray);
             //数组类型参数
             jclass ArrayClazz = env->FindClass("java/util/Arrays");
-            jstring argJstr  ;
+            jstring argJstr;
 
             //byte数组 特殊处理
             if (strcmp(classInfo, "[B") == 0) {
@@ -464,12 +404,10 @@ void Jnitrace::getArgsInfo(JNIEnv *env, jobject obj, jmethodID jmethodId,
                 env->DeleteLocalRef(utf);
                 env->DeleteLocalRef(strclazz);
 
-            } else{
+            } else {
                 jmethodID methodid = env->GetStaticMethodID(ArrayClazz, "toString", "([Z)Ljava/lang/String;");
-                argJstr = static_cast<jstring>(env->CallStaticObjectMethod(ArrayClazz, methodid,arg));
+                argJstr = static_cast<jstring>(env->CallStaticObjectMethod(ArrayClazz, methodid, arg));
             }
-
-
             //上面的逻辑主要是为了处理argJstr的赋值
             const char *ret = env->GetStringUTFChars(argJstr, nullptr);
             if (ret != nullptr) {
@@ -481,28 +419,20 @@ void Jnitrace::getArgsInfo(JNIEnv *env, jobject obj, jmethodID jmethodId,
             jobject arg = va_arg(args, jobject);
             Jnitrace::getJObjectInfoInternal(env, arg, argsInfo, true, classInfo);
         }
-
     }
-
     //end
     va_end(args);
-
 }
-
 
 char *Jnitrace::getJObjectClassInfo(JNIEnv *env, jobject obj) {
     if (obj == nullptr) {
         return "";
     }
-
     jclass clazz = env->FindClass("java/lang/Class");
-
     jmethodID method_id_getName = env->GetMethodID(clazz, "getName", "()Ljava/lang/String;");
 
     //print class info
     auto getClassName_ret = static_cast<jstring>(env->CallObjectMethod(obj, method_id_getName));
-
-
     const char *getClass = env->GetStringUTFChars(getClassName_ret, NULL);
 
     //free
@@ -552,10 +482,10 @@ HOOK_DEF(jfieldID, GetFieldID, JNIEnv *env, jclass clazz, const char *name, cons
     dladdr((void *) __builtin_return_address(0), &info);
     if (strstr(info.dli_fname, filterSoName.c_str())) {
         jmethodID method_id_toString = env->GetMethodID(
-                env->FindClass("java/lang/Object"),"toString","()Ljava/lang/String;");
+                env->FindClass("java/lang/Object"), "toString", "()Ljava/lang/String;");
         auto toString_ret = static_cast<jstring>(env->CallObjectMethod(clazz, method_id_toString));
         const char *toString = env->GetStringUTFChars(toString_ret, NULL);
-        LOG(INFO) << "get field info  :  "<< toString <<"  " << name << "  " << sig;
+        LOG(INFO) << "get field info  :  " << toString << "  " << name << "  " << sig;
         return orig_GetFieldID(env, clazz, name, sig);
     }
     return orig_GetFieldID(env, clazz, name, sig);
@@ -567,15 +497,14 @@ HOOK_DEF(jfieldID, GetStaticFieldID, JNIEnv *env, jclass clazz, const char *name
     dladdr((void *) __builtin_return_address(0), &info);
     if (strstr(info.dli_fname, filterSoName.c_str())) {
         jmethodID method_id_toString = env->GetMethodID(
-                env->FindClass("java/lang/Object"),"toString","()Ljava/lang/String;");
+                env->FindClass("java/lang/Object"), "toString", "()Ljava/lang/String;");
         auto toString_ret = static_cast<jstring>(env->CallObjectMethod(clazz, method_id_toString));
         const char *toString = env->GetStringUTFChars(toString_ret, NULL);
-        LOG(INFO) << "get static field info  :  "<< toString <<"  " << name << "  " << sig;
+        LOG(INFO) << "get static field info  :  " << toString << "  " << name << "  " << sig;
         return orig_GetStaticFieldID(env, clazz, name, sig);
     }
     return orig_GetStaticFieldID(env, clazz, name, sig);
 }
-
 
 //jobject     (*NewObjectV)(JNIEnv*, jclass, jmethodID, va_list);
 HOOK_DEF(jobject, NewObjectV, JNIEnv *env, jclass clazz, jmethodID jmethodId, va_list args) {
@@ -598,17 +527,16 @@ HOOK_DEF(jobject, ToReflectedMethod, JNIEnv *env, jclass clazz, jmethodID jmetho
     dladdr((void *) __builtin_return_address(0), &info);
     if (strstr(info.dli_fname, filterSoName.c_str())) {
         jobject obj = orig_ToReflectedMethod(env, clazz, jmethodId, isStatic);
-        if(obj!= nullptr){
+        if (obj != nullptr) {
             Jnitrace::getJObjectInfoInternal(env, obj, "ToReflectedMethod result ", false, nullptr);
         }
         return obj;
     }
     return orig_ToReflectedMethod(env, clazz, jmethodId, isStatic);
 }
+
 void Jnitrace::startjnitrace(JNIEnv *env, char *soname) {
-
     filterSoName = string(soname);
-
 
     HOOK_JNI(env, CallObjectMethodV)
     HOOK_JNI(env, CallBooleanMethodV)
@@ -644,9 +572,7 @@ void Jnitrace::startjnitrace(JNIEnv *env, char *soname) {
 
     HOOK_JNI(env, NewObjectV)
 
-
-    LOG(INFO) << ">>>>>>>>> Jnitrace hook sucess! ";
-
+    LOGE(">>>>>>>>> Jnitrace hook sucess! ");
 }
 
 

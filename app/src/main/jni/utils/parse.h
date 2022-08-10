@@ -1,14 +1,8 @@
-//
-// Created by Administrator on 2020-09-14.
-//
-
 #ifndef INC_01_PARSE_H
 #define INC_01_PARSE_H
 
-
 #include <jni.h>
 #include <string>
-
 
 using namespace std;
 
@@ -22,9 +16,6 @@ public:
     static char *get_process_name();
 
     static bool jboolean2bool(jboolean value);
-
-
 };
-
 
 #endif //INC_01_PARSE_H

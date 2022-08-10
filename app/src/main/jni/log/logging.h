@@ -14,7 +14,7 @@
 
 #define TAG "JniTraceLiuKuo"
 
-#define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__);
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__);
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, TAG ,__VA_ARGS__);
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, TAG ,__VA_ARGS__);
 #define LOGW(...) __android_log_print(ANDROID_LOG_WARN, TAG ,__VA_ARGS__);
@@ -121,7 +121,6 @@
 #endif
 
 
-//LOG(ERROR) << "TestCharString 函数打印   " <<TestCharString ;
 #define LOG(severity) LOG_ ## severity.stream()
 
 
@@ -233,7 +232,6 @@ namespace Zhenxi {
             abort();
         }
     };
-
 }
 
 #endif  // _WHALE_BASE_LOGGING_H_
